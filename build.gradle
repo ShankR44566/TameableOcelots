@@ -1,31 +1,17 @@
 plugins {
-    id 'net.fabricmc.fabric-loom' version '1.14.10'
+    id 'net.fabricmc.fabric-loom' version '1.2-SNAPSHOT'
     id 'maven-publish'
 }
 
-group = 'com.shankr44566'
-version = '1.0.0'
-archivesBaseName = 'tameableocelots'
+version = project.mod_version
+group = project.maven_group
+
+base {
+    archivesName = project.archives_base_name
+}
 
 repositories {
-    // Loom automatically includes Minecraft and Fabric repositories
-}
-
-dependencies {
-    minecraft "com.mojang:minecraft:1.21.1"
-    mappings "net.fabricmc:yarn:1.21.1+build.1:v2"
-    modImplementation "net.fabricmc:fabric-loader:0.14.22"
-    modImplementation "net.fabricmc.fabric-api:fabric-api:0.77.0+1.21.1"
-}
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
-    withSourcesJar()
-}
-
-tasks.withType(JavaCompile).configureEach {
-    it.options.release = 17
+    // Loom automatically adds the Minecraft and Fabric repositories
 }
 
 loom {
@@ -39,24 +25,47 @@ loom {
     }
 }
 
+dependencies {
+    minecraft "com.mojang:minecraft:1.21.1"
+    mappings "net.fabricmc:yarn:1.21.1+build.1:v2"
+    modImplementation "net.fabricmc:fabric-loader:0.14.22"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:0.77.0+1.21.1"
+}
+
 processResources {
     inputs.property "version", project.version
+
     filesMatching("fabric.mod.json") {
-        expand "version": project.version
+        expand "version": inputs.properties.version
     }
 }
 
+tasks.withType(JavaCompile).configureEach {
+    it.options.release = 17
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+    withSourcesJar()
+}
+
 jar {
+    inputs.property "archivesName", project.base.archivesName
+
     from("LICENSE") {
-        rename { "${it}_${archivesBaseName}" }
+        rename { "${it}_${inputs.properties.archivesName}" }
     }
 }
 
 publishing {
     publications {
         create("mavenJava", MavenPublication) {
-            artifactId = archivesBaseName
+            artifactId = project.archives_base_name
             from components.java
         }
+    }
+    repositories {
+        // Add publishing repositories if needed
     }
 }
