@@ -1,38 +1,26 @@
 {
-	"schemaVersion": 1,
-	"id": "tameableocelots",
-	"version": "${version}",
-	"name": "Tameable Ocelots",
-	"description": "This is an example description! Tell everyone what your mod is about!",
-	"authors": [
-		"Me!"
-	],
-	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
-	},
-	"license": "CC0-1.0",
-	"icon": "assets/tameableocelots/icon.png",
-	"environment": "*",
-	"entrypoints": {
-		"main": [
-			"name.modid.TameableOcelots"
-		],
-		"client": [
-			"name.modid.TameableOcelotsClient"
-		]
-	},
-	"mixins": [
-		"tameableocelots.mixins.json",
-		{
-			"config": "tameableocelots.client.mixins.json",
-			"environment": "client"
-		}
-	],
-	"depends": {
-		"fabricloader": ">=0.18.4",
-		"minecraft": "~1.21.1",
-		"java": ">=21",
-		"fabric-api": "*"
-	}
+  "schemaVersion": 1,
+  "id": "tameableocelots",
+  "version": "1.0.0",
+  "name": "Tameable Ocelots",
+  "description": "Makes ocelots tameable without turning into cats.",
+  "authors": ["ShankR44566"],
+  "contact": {
+    "sources": "https://github.com/ShankR44566/TameableOcelots"
+  },
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.shankr44566.tameableocelots.TameableOcelots"
+    ]
+  },
+  "mixins": [
+    "tameableocelots.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.15.0",
+    "minecraft": "1.21.1",
+    "java": ">=21"
+  }
 }
