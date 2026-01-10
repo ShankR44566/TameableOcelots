@@ -1,41 +1,37 @@
 package com.shankr44566.tameableocelots.mixin;
 
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.passive.AnimalEntity;
-import net.minecraft.entity.passive.OcelotEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.animal.Ocelot;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.level.Level;
+
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(OcelotEntity.class)
-public abstract class OcelotEntityMixin extends AnimalEntity {
+@Mixin(Ocelot.class)
+public abstract class OcelotEntityMixin extends Animal {
 
-    protected OcelotEntityMixin(EntityType<? extends AnimalEntity> entityType, World world) {
+    protected OcelotEntityMixin(EntityType<? extends Animal> entityType, Level world) {
         super(entityType, world);
     }
 
-    @Override
-    public ActionResult interactMob(PlayerEntity player, Hand hand) {
-        ItemStack stack = player.getStackInHand(hand);
+    @Inject(method = "mobInteract", at = @At("HEAD"), cancellable = true)
+    public void interactMob(Player player, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
+        ItemStack stack = player.getItemInHand(hand);
 
-        if (!this.isTamed() && (stack.isOf(Items.COD) || stack.isOf(Items.SALMON))) {
-            if (!player.getAbilities().creativeMode) {
-                stack.decrement(1);
+        if (!this.isTame() && (stack.is(Items.COD) || stack.is(Items.SALMON))) {
+            if (!this.level().isClientSide) {
+                this.tame(player);
+                this.level().broadcastEntityEvent(this, (byte) 7); // heart particles
             }
-
-            if (!this.getWorld().isClient) {
-                this.setOwner(player);
-                this.setTamed(true);
-                this.getWorld().sendEntityStatus(this, (byte) 7); // hearts
-            }
-
-            return ActionResult.SUCCESS;
+            cir.setReturnValue(InteractionResult.sidedSuccess(this.level().isClientSide));
         }
-
-        return super.interactMob(player, hand);
     }
 }
