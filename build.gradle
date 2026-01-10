@@ -12,7 +12,11 @@ base {
 }
 
 repositories {
-    // Loom automatically adds the Minecraft and Fabric repositories
+    maven {
+        name = "Fabric"
+        url = "https://maven.fabricmc.net/"
+    }
+    mavenCentral()
 }
 
 loom {
